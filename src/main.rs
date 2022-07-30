@@ -1,6 +1,6 @@
 extern crate adjutant;
 
-use adjutant::task::{command_task, task_add, task_init};
+use adjutant::task::{command_task, task_add, task_init, task_show};
 use clap::Command;
 
 fn cli() -> Command<'static> {
@@ -19,8 +19,7 @@ fn main() {
     match matches.subcommand() {
         Some(("task", sub_matches)) => {
             if sub_matches.contains_id("show") {
-                // TODO : Shows tasks
-                println!("SHOW: TASK_NAMES");
+                task_show();
                 return;
             }
 

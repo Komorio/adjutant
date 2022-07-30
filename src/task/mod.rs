@@ -1,5 +1,8 @@
 use clap::{arg, Command};
-use std::{fs, io::Write};
+use std::{
+    fs,
+    io::{Read, Write},
+};
 
 fn option_add() -> clap::Arg<'static> {
     arg!(-a --add <TASK_NAME>).required(false)
@@ -54,7 +57,51 @@ pub fn task_add(task: String) {
     println!("ADDED: {}", task);
 }
 
-pub fn task_show() {}
+pub fn task_show() {
+    let mut task_data = load_task_data();
+
+    let mut data = String::new();
+    task_data
+        .read_to_string(&mut data)
+        .expect("Failed read data.");
+
+    let mut todo_tasks: Vec<String> = vec![];
+    let mut done_tasks: Vec<String> = vec![];
+
+    for line in data.lines() {
+        if line.starts_with("-[ ]") {
+            todo_tasks.push(String::from(line));
+        } else if line.starts_with("-[X]") {
+            done_tasks.push(String::from(line));
+        }
+    }
+
+    println!("-- TODO --\n");
+
+    for task in todo_tasks {
+        println!("{}", task);
+    }
+
+    println!("\n-- DONE --\n");
+
+    for task in done_tasks {
+        println!("{}", task);
+    }
+}
+
+pub fn load_task_data() -> fs::File {
+    let file = fs::File::open("./.adjutant/tasks/TASKS.dat");
+
+    let file = match file {
+        Ok(f) => f,
+        Err(_) => {
+            println!("Couldn't load task data file.");
+            std::process::exit(0);
+        }
+    };
+
+    file
+}
 
 pub fn load_editable_task_data() -> fs::File {
     let file = fs::OpenOptions::new()
@@ -69,6 +116,5 @@ pub fn load_editable_task_data() -> fs::File {
             std::process::exit(0);
         }
     };
-
     file
 }
