@@ -4,6 +4,8 @@ use std::{
     io::{Read, Write},
 };
 
+const DATA_PATH: &str = "./.adjutant/tasks/TASK.dat";
+
 fn option_add() -> clap::Arg<'static> {
     arg!(-a --add <TASK_NAME>).required(false)
 }
@@ -36,7 +38,7 @@ pub fn task_init() {
 
     match result {
         Ok(_) => {
-            fs::File::create("./.adjutant/tasks/TASKS.dat").expect("Failed create task data.");
+            fs::File::create(DATA_PATH).expect("Failed create task data.");
             println!("adjutant task initialized");
         }
         Err(err) => {
@@ -90,7 +92,7 @@ pub fn task_show() {
 }
 
 pub fn load_task_data() -> fs::File {
-    let file = fs::File::open("./.adjutant/tasks/TASKS.dat");
+    let file = fs::File::open(DATA_PATH);
 
     let file = match file {
         Ok(f) => f,
@@ -107,7 +109,7 @@ pub fn load_editable_task_data() -> fs::File {
     let file = fs::OpenOptions::new()
         .write(true)
         .append(true)
-        .open("./.adjutant/tasks/TASKS.dat");
+        .open(DATA_PATH);
 
     let file = match file {
         Ok(f) => f,
