@@ -25,7 +25,7 @@ pub fn command_task() -> Command<'static> {
 }
 
 pub fn task_init() {
-    let already_initialized = fs::metadata("./.adjustant");
+    let already_initialized = fs::metadata("./.adjutant");
 
     if already_initialized.is_ok() {
         println!("already initialized");
