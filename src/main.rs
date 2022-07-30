@@ -1,6 +1,6 @@
 extern crate adjutant;
 
-use adjutant::task::command_task;
+use adjutant::task::{command_task, task_init};
 use clap::Command;
 
 fn cli() -> Command<'static> {
@@ -26,7 +26,8 @@ fn main() {
 
             match sub_matches.subcommand() {
                 Some(("init", _)) => {
-                    println!("INIT");
+                    task_init();
+                    return;
                 }
                 _ => (),
             };
