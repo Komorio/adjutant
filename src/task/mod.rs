@@ -1,5 +1,5 @@
 use clap::{arg, Command};
-use std::fs;
+use std::{fs, io::Write};
 
 fn option_add() -> clap::Arg<'static> {
     arg!(-a --add <TASK_NAME>).required(false)
@@ -41,4 +41,32 @@ pub fn task_init() {
             println!("Err: {}", err);
         }
     };
+}
+
+pub fn task_add(task: String) {
+    let data = format!("-[ ] {}\n", task);
+
+    let mut task_data = load_task_data();
+
+    task_data.write(data.as_bytes()).expect("Failed task add");
+    task_data.flush().expect("Failed task data flush");
+
+    println!("ADDED: {}", task);
+}
+
+pub fn load_task_data() -> fs::File {
+    let file = fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("./.adjutant/tasks/TASKS.dat");
+
+    let file = match file {
+        Ok(f) => f,
+        Err(_) => {
+            println!("Couldn't load task data file.");
+            std::process::exit(0);
+        }
+    };
+
+    file
 }

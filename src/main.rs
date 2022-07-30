@@ -1,6 +1,6 @@
 extern crate adjutant;
 
-use adjutant::task::{command_task, task_init};
+use adjutant::task::{command_task, task_add, task_init};
 use clap::Command;
 
 fn cli() -> Command<'static> {
@@ -39,8 +39,8 @@ fn main() {
 
             match add {
                 Some(task_name) => {
-                    // TODO : Add task
-                    println!("ADD: {}", task_name);
+                    task_add(task_name.clone());
+                    return;
                 }
                 _ => (),
             };
