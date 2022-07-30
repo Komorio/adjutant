@@ -46,7 +46,7 @@ pub fn task_init() {
 pub fn task_add(task: String) {
     let data = format!("-[ ] {}\n", task);
 
-    let mut task_data = load_task_data();
+    let mut task_data = load_editable_task_data();
 
     task_data.write(data.as_bytes()).expect("Failed task add");
     task_data.flush().expect("Failed task data flush");
@@ -54,7 +54,9 @@ pub fn task_add(task: String) {
     println!("ADDED: {}", task);
 }
 
-pub fn load_task_data() -> fs::File {
+pub fn task_show() {}
+
+pub fn load_editable_task_data() -> fs::File {
     let file = fs::OpenOptions::new()
         .write(true)
         .append(true)
