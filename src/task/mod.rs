@@ -1,3 +1,8 @@
+use super::App;
+use super::UserCursor;
+use super::Vec2;
+use super::Widget;
+
 use clap::{arg, Command};
 use std::{
     fs,
@@ -78,16 +83,82 @@ pub fn task_show() {
         }
     }
 
-    println!("-- TODO --\n");
+    let mut app = App::new(UserCursor::from(2, todo_tasks.len() as u16));
 
-    for task in todo_tasks {
-        println!("{}", task);
-    }
+    const TODO_X: u16 = 5;
+    const DONE_X: u16 = 45;
 
-    println!("\n-- DONE --\n");
+    loop {
+        let mut widgets: Vec<Widget> = vec![];
 
-    for task in done_tasks {
-        println!("{}", task);
+        let cursor_pos = Widget {
+            position: Vec2::from(5, 0),
+            content: format!("({},{})", app.cursor.position.x, app.cursor.position.y),
+            has_highlight: false,
+        };
+
+        widgets.push(cursor_pos);
+
+        let todo_title = Widget {
+            position: Vec2::from(TODO_X, 3),
+            content: String::from("TODO"),
+            has_highlight: app.cursor.position.x == 0,
+        };
+
+        let done_title = Widget {
+            position: Vec2::from(DONE_X, 3),
+            content: String::from("DONE"),
+            has_highlight: app.cursor.position.x == 1,
+        };
+
+        widgets.push(todo_title);
+        widgets.push(done_title);
+
+        for index in 0..todo_tasks.len() {
+            let y = 3 + (index + 1) * 2;
+
+            let widget = Widget {
+                position: Vec2::from(TODO_X, y as u16),
+                content: todo_tasks[index].clone(),
+                has_highlight: app.cursor.position.x == 0 && app.cursor.position.y == index as u16,
+            };
+
+            widgets.push(widget);
+        }
+
+        for index in 0..done_tasks.len() {
+            let y = 3 + (index + 1) * 2;
+
+            let widget = Widget {
+                position: Vec2::from(DONE_X, y as u16),
+                content: done_tasks[index].clone(),
+                has_highlight: app.cursor.position.x == 1 && app.cursor.position.y == index as u16,
+            };
+
+            widgets.push(widget);
+        }
+
+        app.render(widgets);
+
+        let prev_x = app.cursor.position.x;
+
+        app.update();
+
+        if app.is_ended {
+            break;
+        }
+
+        if prev_x != app.cursor.position.x {
+            if app.cursor.position.x == 0 {
+                app.cursor.max_y = todo_tasks.len() as u16;
+            } else if app.cursor.position.x == 1 {
+                app.cursor.max_y = done_tasks.len() as u16;
+            }
+
+            if app.cursor.position.y >= app.cursor.max_y {
+                app.cursor.position.y = app.cursor.max_y - 1;
+            }
+        }
     }
 }
 
