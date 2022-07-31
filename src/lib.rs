@@ -97,6 +97,8 @@ impl App {
     }
 
     pub fn render(&self, widgets: Vec<Widget>) {
+        erase();
+
         for widget in widgets {
             mv(widget.position.y as i32, widget.position.x as i32);
 
