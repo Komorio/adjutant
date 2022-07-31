@@ -102,28 +102,34 @@ pub fn task_show() {
         widgets.push(todo_title);
         widgets.push(done_title);
 
-        for index in 0..todo_tasks.len() {
-            let y = 3 + (index + 1) * 2;
+        if todo_tasks.len() > 0 {
+            for index in 0..todo_tasks.len() {
+                let y = 3 + (index + 1) * 2;
 
-            let widget = Widget {
-                position: Vec2::from(TODO_X, y as u16),
-                content: todo_tasks[index].clone(),
-                has_highlight: app.cursor.position.x == 0 && app.cursor.position.y == index as u16,
-            };
+                let widget = Widget {
+                    position: Vec2::from(TODO_X, y as u16),
+                    content: todo_tasks[index].clone(),
+                    has_highlight: app.cursor.position.x == 0
+                        && app.cursor.position.y == index as u16,
+                };
 
-            widgets.push(widget);
+                widgets.push(widget);
+            }
         }
 
-        for index in 0..done_tasks.len() {
-            let y = 3 + (index + 1) * 2;
+        if done_tasks.len() > 0 {
+            for index in 0..done_tasks.len() {
+                let y = 3 + (index + 1) * 2;
 
-            let widget = Widget {
-                position: Vec2::from(DONE_X, y as u16),
-                content: done_tasks[index].clone(),
-                has_highlight: app.cursor.position.x == 1 && app.cursor.position.y == index as u16,
-            };
+                let widget = Widget {
+                    position: Vec2::from(DONE_X, y as u16),
+                    content: done_tasks[index].clone(),
+                    has_highlight: app.cursor.position.x == 1
+                        && app.cursor.position.y == index as u16,
+                };
 
-            widgets.push(widget);
+                widgets.push(widget);
+            }
         }
 
         app.render(widgets);
@@ -144,7 +150,11 @@ pub fn task_show() {
             }
 
             if app.cursor.position.y >= app.cursor.max_y {
-                app.cursor.position.y = app.cursor.max_y - 1;
+                if app.cursor.max_y > 0 {
+                    app.cursor.position.y = app.cursor.max_y - 1;
+                } else {
+                    app.cursor.position.y = 0;
+                }
             }
         }
     }
