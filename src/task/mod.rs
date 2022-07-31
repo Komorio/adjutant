@@ -87,14 +87,6 @@ pub fn task_show() {
     loop {
         let mut widgets: Vec<Widget> = vec![];
 
-        let cursor_pos = Widget {
-            position: Vec2::from(5, 0),
-            content: format!("({},{})", app.cursor.position.x, app.cursor.position.y),
-            has_highlight: false,
-        };
-
-        widgets.push(cursor_pos);
-
         let todo_title = Widget {
             position: Vec2::from(TODO_X, 3),
             content: String::from("TODO"),
