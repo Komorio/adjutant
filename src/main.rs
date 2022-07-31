@@ -31,23 +31,12 @@ fn main() {
                 _ => (),
             };
 
-            let (add, done) = (
-                sub_matches.get_one::<String>("add"),
-                sub_matches.get_one::<String>("done"),
-            );
+            let add = sub_matches.get_one::<String>("add");
 
             match add {
                 Some(task_name) => {
                     task_add(task_name.clone());
                     return;
-                }
-                _ => (),
-            };
-
-            match done {
-                Some(task_name) => {
-                    // TODO : Make done
-                    println!("DONE: {}", task_name);
                 }
                 _ => (),
             };
