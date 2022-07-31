@@ -52,7 +52,7 @@ pub fn task_init() {
 pub fn task_add(task: String) {
     let data = format!("-[ ] {}\n", task);
 
-    let mut task_data = load_editable_task_data();
+    let mut task_data = load_editable_task_data(true);
 
     task_data.write(data.as_bytes()).expect("Failed task add");
     task_data.flush().expect("Failed task data flush");
@@ -135,12 +135,29 @@ pub fn task_show() {
         app.render(widgets);
 
         let prev_x = app.cursor.position.x;
-
-        app.update();
+        let key = app.update();
 
         if app.is_ended {
+            save_tasks(todo_tasks, done_tasks);
             break;
         }
+
+        match key {
+            'D' => {
+                if app.cursor.position.x == 0 {
+                    let index = app.cursor.position.y as usize;
+
+                    done_tasks.push(todo_tasks[index].clone().replace("-[ ]", "-[X]"));
+                    todo_tasks.remove(index);
+                } else if app.cursor.position.x == 1 {
+                    let index = app.cursor.position.y as usize;
+
+                    todo_tasks.push(done_tasks[index].clone().replace("-[X]", "-[ ]"));
+                    done_tasks.remove(index);
+                }
+            }
+            _ => (),
+        };
 
         if prev_x != app.cursor.position.x {
             if app.cursor.position.x == 0 {
@@ -160,6 +177,20 @@ pub fn task_show() {
     }
 }
 
+fn save_tasks(todo_tasks: Vec<String>, done_tasks: Vec<String>) {
+    let mut file = load_editable_task_data(false);
+
+    for index in 0..todo_tasks.len() {
+        file.write(todo_tasks[index].as_bytes()).unwrap();
+        file.write(b"\n").unwrap();
+    }
+
+    for index in 0..done_tasks.len() {
+        file.write(done_tasks[index].as_bytes()).unwrap();
+        file.write(b"\n").unwrap();
+    }
+}
+
 pub fn load_task_data() -> fs::File {
     let file = fs::File::open(DATA_PATH);
 
@@ -174,10 +205,10 @@ pub fn load_task_data() -> fs::File {
     file
 }
 
-pub fn load_editable_task_data() -> fs::File {
+pub fn load_editable_task_data(is_append: bool) -> fs::File {
     let file = fs::OpenOptions::new()
         .write(true)
-        .append(true)
+        .append(is_append)
         .open(DATA_PATH);
 
     let file = match file {
